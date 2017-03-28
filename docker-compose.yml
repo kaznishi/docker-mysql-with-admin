@@ -13,6 +13,7 @@ services:
     # MySQLのコンテナ内のDBデータ(/var/lib/mysql)を、Dockerを動かしているホスト(./var/mysql/default)に保存 = データの永続化
     volumes:
         - ./var/mysql/default:/var/lib/mysql # ホスト:コンテナ:アクセスモード(今回は省略)
+        - ./var/mysql/logs:/var/log/mysql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
