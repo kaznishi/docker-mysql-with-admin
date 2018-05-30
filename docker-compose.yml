@@ -1,10 +1,9 @@
-version: '2'
+version: '3'
 services:
-  default-mysql:
+  mysql:
     build: mysql
     ports:
         - "13306:3306" # [外部向けポート:内部ポート]
-    container_name: default-mysql
     environment:
         - MYSQL_ROOT_PASSWORD=admpass
         - MYSQL_DATABASE=defaultdb
@@ -12,19 +11,24 @@ services:
         - MYSQL_PASSWORD=defaultpass
     # MySQLのコンテナ内のDBデータ(/var/lib/mysql)を、Dockerを動かしているホスト(./var/mysql/default)に保存 = データの永続化
     volumes:
-        - ./var/mysql/default:/var/lib/mysql # ホスト:コンテナ:アクセスモード(今回は省略)
-        - ./var/mysql/logs:/var/log/mysql
+        - db-volume:/var/lib/mysql # ホスト:コンテナ:アクセスモード(今回は省略)
+        - log-volume:/var/log/mysql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     environment:
       - PMA_ARBITRARY=1
-      - PMA_HOST=default-mysql
+      - PMA_HOST=mysql
       - PMA_USER=root
       - PMA_PASSWORD=admpass
-    links:
-      - default-mysql
+    depends_on:
+      - mysql
     ports:
       - 8080:80
     volumes:
-      - ./var/phpmyadmin/sessions:/sessions
+      - session-volume:/sessions
+
+volumes:
+  db-volume:
+  session-volume:
+  log-volume:
